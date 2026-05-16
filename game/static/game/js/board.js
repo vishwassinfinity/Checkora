@@ -966,17 +966,38 @@
             };
 
             if (welcomeAIBtn) welcomeAIBtn.onclick = () => {
-                nameInputs.style.display = 'none';
                 modeSelection.style.display = 'none';
                 pveOptions.style.display = 'flex';
+
+                const whiteInput = document.getElementById('whiteNameInput');
+                const blackInput = document.getElementById('blackNameInput');
+
+                if (whiteInput) {
+                    whiteInput.style.display = 'block';
+                    whiteInput.placeholder = 'Your Name';
+                }
+
+                if (blackInput) {
+                    blackInput.style.display = 'none';
+                }
             };
 
             if (backToModes) backToModes.onclick = () => {
                 pveOptions.style.display = 'none';
                 modeSelection.style.display = 'flex';
                 nameInputs.style.display = 'flex';
-            };
 
+                const whiteInput = document.getElementById('whiteNameInput');
+                const blackInput = document.getElementById('blackNameInput');
+
+                if (whiteInput) {
+                    whiteInput.placeholder = 'White Player Name';
+                }
+
+                if (blackInput) {
+                    blackInput.style.display = 'block';
+                }
+            };
             const colorBtns = pveOptions.querySelectorAll('.color-choice');
             colorBtns.forEach(btn => {
                 btn.onclick = () => {
