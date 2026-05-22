@@ -2183,7 +2183,7 @@ if (leaveConfirmNo) leaveConfirmNo.addEventListener('click', () => {
             const statusText = document.getElementById('status-text');
             function setOfflineStatus() {
             if (!statusIndicator || !statusText) return;
-                statusIndicator.classList.remove("offline");
+                statusIndicator.classList.add("offline"); #fixed
                 statusText.textContent = "offline";
             }
             function setOnlineStatus() {
