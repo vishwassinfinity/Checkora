@@ -1907,9 +1907,10 @@
                         { white: currentBlackName, black: currentWhiteName });
                 }
             };
-            if (gameOverExitBtn) gameOverExitBtn.onclick = () => {
-            window.location.href = '/';
-                 };
+           if (gameOverExitBtn) gameOverExitBtn.addEventListener('click', () => {
+    const confettiContainer = gameOverOverlay.querySelector('.confetti-container');
+    if (confettiContainer) confettiContainer.remove();
+});
 
             // Theme Switcher
             function initThemeSwitcher() {

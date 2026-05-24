@@ -474,11 +474,10 @@
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <button type="button" class="btn btn-gold" id="shareResultBtn" style="padding: 12px; font-size: 1rem;">📤 Share Result</button>
                 <button class="btn btn-gold" id="gameOverStartBtn" style="padding: 12px; font-size: 1rem;">Start New Game</button>
-               <button type="button" class="btn" id="gameOverExitBtn" 
-               onclick="window.location.href='/'" 
-              style="padding: 12px; font-size: 1rem; margin-top: 10px; background: #333; color: #fff; cursor: pointer;">
-            Exit to Home
-            </button>
+               <a href="{% url 'landing' %}" class="btn" id="gameOverExitBtn"
+   style="padding: 12px; font-size: 1rem; margin-top: 10px; background: #333; color: #fff; cursor: pointer; text-align: center; text-decoration: none; display: block;">
+    Exit to Home
+</a>
             </div>
         </div>
     </div>
