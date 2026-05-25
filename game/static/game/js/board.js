@@ -482,6 +482,10 @@
                 if (drawBtn) drawBtn.style.display = gameMode === 'pvp' ? 'block' : 'none';
                 if (pauseBtn)  pauseBtn.style.display  = 'block';  
                 if (resignBtn) resignBtn.style.display = 'block'; 
+                const isActive = ['active', 'check', 'ok'].includes(data.game_status);
+                if (newPvPBtn) newPvPBtn.style.display = isActive ? 'none' : '';
+                if (newAIBtn) newAIBtn.style.display = isActive ? 'none' : '';
+                if (newFenBtn) newFenBtn.style.display = isActive ? 'none' : '';
 
                 updatePlayerNames(data);
                 updateTurn();
@@ -1383,6 +1387,9 @@
                 if (resignBtn) resignBtn.style.display = 'none';
                 if (drawBtn) drawBtn.style.display = 'none';
                 if (pauseBtn) pauseBtn.style.display = 'none';
+                if (newPvPBtn) newPvPBtn.style.display = '';
+                if (newAIBtn) newAIBtn.style.display = '';
+                if (newFenBtn) newFenBtn.style.display = '';
 
                 let durationText = '';
 
@@ -1826,6 +1833,9 @@
                 if (resignBtn) resignBtn.style.display = '';
                 if (pauseBtn) pauseBtn.style.display = '';
                 if (drawBtn) drawBtn.style.display = (gameMode === 'pvp') ? 'block' : 'none';
+                if (newPvPBtn) newPvPBtn.style.display = 'none';
+                if (newAIBtn) newAIBtn.style.display = 'none';
+                if (newFenBtn) newFenBtn.style.display = 'none';
                 if (gameMode === 'ai') {
                     flipped = (playerColor === 'black');
                 } else {
@@ -2188,6 +2198,10 @@
 
             if (resignBtn) resignBtn.onclick = () => {
                 if (!gameOver && !paused) {
+                    const confirmDifficultyContainer = document.getElementById('confirmDifficultyContainer');
+                    const confirmTimerContainer = document.getElementById('confirmTimerContainer');
+                    if (confirmDifficultyContainer) confirmDifficultyContainer.style.display = 'none';
+                    if (confirmTimerContainer) confirmTimerContainer.style.display = 'none';
                     showConfirm("Resign?", "Are you sure you want to resign?", async () => {
                         try {
                             const result = await post('/api/resign/', {});
@@ -2244,6 +2258,26 @@
     const confettiContainer = gameOverOverlay.querySelector('.confetti-container');
     if (confettiContainer) confettiContainer.remove();
 });
+
+            // ========== Exit to Menu Logic ==========
+            const exitToMenuBtn = document.getElementById('exitToMenuBtn');
+            if (exitToMenuBtn) {
+                exitToMenuBtn.onclick = () => {
+                    // 1. Hide the Game Over modal and clear celebrations
+                    gameOverOverlay.classList.remove('active', 'game-over-celebration');
+                    const confettiContainer = gameOverOverlay.querySelector('.confetti-container');
+                    if (confettiContainer) {
+                        confettiContainer.remove();
+                    }
+
+                    // 2. Hide the chess board layout
+                    gameLayout.style.visibility = 'hidden';
+
+                    // 3. Reset and show the Welcome/Setup Menu
+                    prepareWelcomeForPvP(true);
+                    welcomeOverlay.classList.add('active');
+                };
+            }
 
             // Theme Switcher
             function initThemeSwitcher() {
