@@ -447,5 +447,18 @@
         </div>
       </div>
     </footer>
+    <div id="backToTopWrapper">
+      <span id="backToTopTooltip">Back to Top</span>
+      <button id="backToTopBtn" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <span class="btn-arrow">^</span>
+      </button>
+  </div>
+  
+  <script>
+      const backToTopWrapper = document.getElementById('backToTopWrapper');
+      window.addEventListener('scroll', () => {
+          backToTopWrapper.classList.toggle('visible', window.scrollY > 300);
+      });
+  </script>
   </body>
 </html>
