@@ -34,6 +34,7 @@
             let touchStartPos = null;
             let activeTouchPieceClone = null;
             let touchDragSrc = null;
+            let touchTapSquare = null;
             let touchDragging = false;
             let touchOffset = { x: 0, y: 0 };
 
@@ -693,7 +694,7 @@
                             const textNode = document.createTextNode(`AI (${playerColor === 'white' ? 'BLACK' : 'WHITE'}) `);
                             const badge = document.createElement('span');
                             badge.textContent = diffLabel;
-                            badge.style.cssText = 'color:#f0c040 !important; font-weight:700; font-size:1.20em; letter-spacing:1px;';
+                            badge.style.cssText = 'color:#f0c040 !important; font-weight:700; font-size:0.95em; letter-spacing:0.2px;';
                             badge.setAttribute('aria-label', `AI difficulty: ${diffLabel}`);
                             aiLabel.appendChild(textNode);
                             aiLabel.appendChild(badge);
@@ -1747,15 +1748,15 @@
                     if (resultState === 'victory') {
                         bannerEl.classList.add('banner-victory');
                         if (bannerIconEl) bannerIconEl.textContent = '🏆';
-                        gameOverTitle.textContent = gameMode === 'pvp' ? '🏆 VICTORY 🏆' : '🏆 VICTORY 🏆';
+                        gameOverTitle.textContent = 'VICTORY';
                     } else if (resultState === 'defeat') {
                         bannerEl.classList.add('banner-defeat');
                         if (bannerIconEl) bannerIconEl.textContent = '💀';
-                        gameOverTitle.textContent = '💀 DEFEAT 💀';
+                        gameOverTitle.textContent = 'DEFEAT';
                     } else {
                         bannerEl.classList.add('banner-draw');
                         if (bannerIconEl) bannerIconEl.textContent = '🤝';
-                        gameOverTitle.textContent = '🤝 DRAW 🤝';
+                        gameOverTitle.textContent = 'DRAW';
                     }
                 }
                 
@@ -3421,13 +3422,11 @@ if (leaveConfirmNo) leaveConfirmNo.addEventListener('click', () => {
 
                 if (!isPremoveDrag && !isNormalDrag) return;
 
-                touchStartPos = { x: touch.clientX, y: touch.clientY };
                 touchDragSrc = { r, c };
-                touchDragging = false;
             }, { passive: true });
 
             boardEl.addEventListener('touchmove', (e) => {
-                if (!touchDragSrc) return;
+                if (!touchDragSrc || !touchStartPos) return;
 
                 const touch = e.touches[0];
                 
@@ -3482,12 +3481,12 @@ if (leaveConfirmNo) leaveConfirmNo.addEventListener('click', () => {
             }, { passive: false });
 
             boardEl.addEventListener('touchend', (e) => {
-                if (!touchDragSrc) return;
+                if (!touchStartPos) return;
 
                 const touch = e.changedTouches[0];
                 let movedToSquare = false;
 
-                if (touchDragging) {
+                if (touchDragging && touchDragSrc) {
                     // Clean up original piece transparency
                     const srcSquareEl = sq(touchDragSrc.r, touchDragSrc.c);
                     const pieceImg = srcSquareEl ? srcSquareEl.querySelector('.piece') : null;
@@ -3505,8 +3504,8 @@ if (leaveConfirmNo) leaveConfirmNo.addEventListener('click', () => {
                     const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
                     const destSquareEl = targetEl ? targetEl.closest('.square') : null;
                     if (destSquareEl) {
-                        const tr = parseInt(destSquareEl.dataset.r);
-                        const tc = parseInt(destSquareEl.dataset.c);
+                        const tr = parseInt(destSquareEl.dataset.r, 10);
+                        const tc = parseInt(destSquareEl.dataset.c, 10);
 
                         if (tr !== touchDragSrc.r || tc !== touchDragSrc.c) {
                             tryMove(touchDragSrc.r, touchDragSrc.c, tr, tc);
@@ -3521,20 +3520,29 @@ if (leaveConfirmNo) leaveConfirmNo.addEventListener('click', () => {
                     // Prevent click generation
                     e.preventDefault();
                 } else {
-                    // Quick tap -> trigger default click/tap behavior
-                    onClick(touchDragSrc.r, touchDragSrc.c);
+                    // Quick tap -> allow tap-to-select and tap-to-destination behavior
+                    const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+                    const tapSquareEl = targetEl ? targetEl.closest('.square') : null;
+                    const tapR = tapSquareEl ? parseInt(tapSquareEl.dataset.r, 10) : touchTapSquare?.r;
+                    const tapC = tapSquareEl ? parseInt(tapSquareEl.dataset.c, 10) : touchTapSquare?.c;
+
+                    if (Number.isInteger(tapR) && Number.isInteger(tapC)) {
+                        onClick(tapR, tapC);
+                        e.preventDefault();
+                    }
                 }
 
                 // Reset state
                 touchStartPos = null;
                 touchDragSrc = null;
+                touchTapSquare = null;
                 touchDragging = false;
             }, { passive: false });
 
             boardEl.addEventListener('touchcancel', (e) => {
-                if (!touchDragSrc) return;
+                if (!touchStartPos) return;
 
-                if (touchDragging) {
+                if (touchDragging && touchDragSrc) {
                     const srcSquareEl = sq(touchDragSrc.r, touchDragSrc.c);
                     const pieceImg = srcSquareEl ? srcSquareEl.querySelector('.piece') : null;
                     if (pieceImg) {
@@ -3551,6 +3559,7 @@ if (leaveConfirmNo) leaveConfirmNo.addEventListener('click', () => {
 
                 touchStartPos = null;
                 touchDragSrc = null;
+                touchTapSquare = null;
                 touchDragging = false;
             }, { passive: true });
 
