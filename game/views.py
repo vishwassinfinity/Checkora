@@ -58,8 +58,10 @@ def index(request):
         finished = {'checkmate', 'stalemate', 'draw', 'resignation', 'timeout'}
         if isinstance(game_data, dict) and game_data.get('game_status') in finished:
             request.session.pop('game', None)
+            request.session.modified = True
     if 'game' not in request.session:
         request.session['game'] = ChessGame().to_dict()
+        request.session.modified = True
     return render(request, 'game/board.html')
 
 
